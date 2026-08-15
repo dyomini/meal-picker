@@ -10,4 +10,4 @@
    비워두면 동기화 없이 기기별 로컬 저장만 씁니다 (앱은 정상 동작).
    ============================================================ */
 
-const SYNC_DB_URL = "";
+const SYNC_DB_URL = "https://meal-picker-3561e-default-rtdb.asia-southeast1.firebasedatabase.app/";
