@@ -227,6 +227,7 @@ const dom = {
   syncBox: $("#syncBox"),
   syncOff: $("#syncOff"),
   syncKeyText: $("#syncKeyText"),
+  syncState: $("#syncState"),
   syncCopyBtn: $("#syncCopyBtn"),
   syncNowBtn: $("#syncNowBtn"),
   syncJoinInput: $("#syncJoinInput"),
@@ -496,6 +497,7 @@ function refreshSettings() {
   renderExcluded();
   renderSceneLists();
   renderSearch();
+  if (typeof renderSync === "function") renderSync();
 }
 
 /* ------------------------------------------------------------
@@ -634,7 +636,12 @@ async function syncPull() {
 
 async function syncPush() {
   if (!SYNC_ON) return "off";
-  const body = Object.assign(currentBackup(), { updatedAt: updatedAt || Date.now() });
+  // 올린 시각을 로컬에도 남겨야 다음 pull 이 방금 올린 걸 다시 받아오지 않는다
+  if (!updatedAt) {
+    updatedAt = Date.now();
+    save(KEY.updatedAt, updatedAt);
+  }
+  const body = Object.assign(currentBackup(), { updatedAt });
   const res = await fetch(syncEndpoint(), {
     method: "PUT",
     headers: { "Content-Type": "application/json" },
@@ -675,19 +682,29 @@ function renderSync() {
   dom.syncBox.classList.remove("hidden");
   dom.syncOff.classList.add("hidden");
   dom.syncKeyText.textContent = ensureSyncKey();
+
+  // 이 코드로 서버에 뭐가 올라가 있는지 알려준다 (연결됐는지 확인용)
+  const n = excluded.size + SCENE_ORDER.reduce((a, k) => a + sceneExcluded[k].size, 0);
+  dom.syncState.textContent = n > 0
+    ? `이 기기에서 제외한 음식 ${n}개가 이 코드로 공유됩니다.`
+    : "아직 제외한 음식이 없습니다. 하나라도 빼면 자동으로 올라갑니다.";
 }
 
 function runPull(manual) {
   if (!SYNC_ON) return;
-  setSyncMsg("확인 중…");
+  if (manual) setSyncMsg("확인 중…");
   syncPull()
     .then(r => {
-      if (r === "pulled") setSyncMsg("다른 기기 내용을 받아왔습니다 · " + nowText());
-      else if (r === "pushed") setSyncMsg("이 기기 내용을 올렸습니다 · " + nowText());
-      else if (r === "empty") setSyncMsg("아직 올린 내용이 없습니다.");
-      else setSyncMsg(manual ? "이미 최신입니다 · " + nowText() : "");
+      if (r === "pulled") setSyncMsg("✅ 다른 기기 내용을 받아왔습니다 · " + nowText());
+      else if (r === "pushed") setSyncMsg("✅ 이 기기 내용을 올렸습니다 · " + nowText());
+      else if (r === "empty") {
+        // 오류가 아니다. 연결은 됐고 양쪽 다 아직 제외한 음식이 없을 뿐이다.
+        setSyncMsg("✅ 연결됐습니다. 아직 제외한 음식이 없어서 주고받을 게 없어요. "
+                 + "다른 기기에서 음식을 하나 빼보면 여기로 넘어옵니다.");
+      }
+      else setSyncMsg(manual ? "✅ 이미 최신입니다 · " + nowText() : "");
     })
-    .catch(e => setSyncMsg("연결 실패: " + e.message));
+    .catch(e => setSyncMsg("⚠️ 연결 실패: " + e.message));
 }
 
 /* ------------------------------------------------------------
