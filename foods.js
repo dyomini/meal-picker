@@ -23,9 +23,14 @@
      heavy   묵직함       light   가벼움
      dessert 식사가 아닌 디저트 (기본적으로 추천에서 빠짐)
 
+   ------------------------------------------------------------
+   ※ 항목은 "메뉴판에서 고르는 단위"로 굵직하게 잡았습니다.
+     짜장면/간짜장/삼선짜장처럼 갈래만 다른 건 하나로 묶고,
+     옆의 주석에 무엇이 포함되는지 적어 두었습니다.
+     더 잘게 쪼개고 싶으면 줄을 추가하시면 됩니다.
+
    ⚠️ 주의: "제외한 음식" 기록은 음식 이름을 기준으로 저장됩니다.
       이미 있는 음식의 이름을 바꾸면 그 음식의 제외 기록이 풀립니다.
-      (오타 수정 등으로 꼭 바꿔야 하면 설정 화면에서 다시 제외해 주세요)
    ============================================================ */
 
 function f(name, cat, price, flags) {
@@ -57,591 +62,296 @@ function f(name, cat, price, flags) {
 
 const FOODS = [
 
-  // ─────────────────────────── 한식: 찌개·전골·탕 ───────────────────────────
+  // ─────────────────────── 한식: 찌개·탕·전골 ───────────────────────
   f("김치찌개", "한식", 1, "solo,share,lab,booze,spicy2,heavy"),
   f("된장찌개", "한식", 1, "solo,share,lab,veg,heavy"),
   f("순두부찌개", "한식", 1, "solo,lab,spicy2,sea"),
   f("부대찌개", "한식", 2, "share,booze,spicy2,heavy"),
   f("청국장", "한식", 1, "solo,lab,smell,veg,heavy"),
-  f("동태찌개", "한식", 2, "share,booze,sea,spicy1"),
-  f("생태탕", "한식", 3, "share,sea,mood"),
+  f("생선매운탕", "한식", 2, "share,booze,sea,spicy2"),        // 동태·우럭·잡어매운탕
+  f("생선맑은탕", "한식", 3, "share,sea,mood,light"),           // 대구탕·생태탕·복지리
   f("알탕", "한식", 2, "share,booze,sea,spicy1"),
   f("꽃게탕", "한식", 3, "share,booze,sea,spicy2"),
   f("해물탕", "한식", 3, "share,booze,sea,spicy2,heavy"),
   f("아구찜", "한식", 3, "share,booze,sea,spicy3,heavy"),
-  f("아구탕", "한식", 3, "share,booze,sea,spicy2"),
-  f("대구탕", "한식", 2, "share,sea,light,mood"),
-  f("복지리", "한식", 3, "share,sea,light,mood"),
-  f("복매운탕", "한식", 3, "share,sea,spicy2"),
-  f("매운탕", "한식", 2, "share,booze,sea,spicy2"),
   f("추어탕", "한식", 2, "solo,lab,smell,heavy"),
   f("삼계탕", "한식", 2, "solo,lab,heavy"),
   f("닭한마리", "한식", 2, "share,booze,heavy"),
   f("갈비탕", "한식", 2, "solo,lab,heavy"),
-  f("설렁탕", "한식", 1, "solo,lab,heavy"),
-  f("곰탕", "한식", 2, "solo,lab,heavy"),
-  f("도가니탕", "한식", 3, "solo,heavy"),
-  f("꼬리곰탕", "한식", 3, "solo,heavy"),
+  f("설렁탕", "한식", 2, "solo,lab,heavy"),                     // 곰탕·도가니탕·꼬리곰탕
   f("육개장", "한식", 1, "solo,lab,spicy2,heavy"),
-  f("우거지갈비탕", "한식", 2, "solo,lab,heavy"),
   f("선지해장국", "한식", 1, "solo,lab,smell,spicy1"),
   f("뼈해장국", "한식", 1, "solo,lab,booze,spicy1,heavy"),
   f("콩나물국밥", "한식", 1, "solo,lab,light"),
-  f("순대국밥", "한식", 1, "solo,lab,smell,heavy"),
-  f("돼지국밥", "한식", 1, "solo,lab,smell,heavy"),
-  f("소머리국밥", "한식", 2, "solo,lab,heavy"),
-  f("황태해장국", "한식", 1, "solo,lab,sea,light"),
-  f("북엇국", "한식", 1, "solo,lab,sea,light"),
+  f("순대국밥", "한식", 1, "solo,lab,smell,heavy"),             // 돼지국밥 포함
+  f("북엇국", "한식", 1, "solo,lab,sea,light"),                 // 황태해장국 포함
   f("미역국백반", "한식", 1, "solo,lab,sea,light"),
-  f("사골우거지국", "한식", 1, "solo,lab,heavy"),
   f("닭볶음탕", "한식", 2, "share,booze,spicy2,heavy"),
   f("감자탕", "한식", 2, "share,booze,spicy1,heavy"),
   f("곱창전골", "한식", 3, "share,booze,smell,spicy1,heavy"),
-  f("소고기전골", "한식", 3, "share,booze,mood"),
+  f("불고기전골", "한식", 3, "share,mood,date"),                // 소고기전골 포함
   f("버섯전골", "한식", 2, "share,veg,light,mood"),
-  f("만두전골", "한식", 2, "share,booze"),
-  f("낙지전골", "한식", 3, "share,booze,sea,spicy2"),
   f("두부전골", "한식", 2, "share,veg,light"),
-  f("불낙전골", "한식", 3, "share,booze,sea,spicy2,heavy"),
+  f("만두전골", "한식", 2, "share,booze"),
+  f("낙지전골", "한식", 3, "share,booze,sea,spicy2"),           // 불낙전골 포함
 
-  // ─────────────────────────── 한식: 밥·백반·덮밥 ───────────────────────────
+  // ─────────────────────── 한식: 밥·백반·덮밥 ───────────────────────
   f("제육볶음", "한식", 1, "solo,share,lab,booze,spicy2,heavy"),
   f("오징어볶음", "한식", 1, "solo,share,lab,sea,spicy2"),
-  f("낙지볶음", "한식", 2, "share,booze,sea,spicy3"),
-  f("쭈꾸미볶음", "한식", 2, "share,booze,sea,spicy3"),
-  f("불고기백반", "한식", 2, "solo,share,lab,mood"),
-  f("돌솥비빔밥", "한식", 1, "solo,lab,veg,mood"),
-  f("전주비빔밥", "한식", 2, "solo,lab,veg,mood"),
+  f("낙지볶음", "한식", 2, "share,booze,sea,spicy3"),           // 쭈꾸미볶음 포함
+  f("낙곱새", "한식", 3, "share,booze,sea,smell,spicy3"),
+  f("불고기백반", "한식", 2, "solo,share,lab,mood"),            // 연탄불고기 포함
+  f("비빔밥", "한식", 1, "solo,lab,veg,mood"),                  // 돌솥·전주·산채·보리비빔밥
   f("육회비빔밥", "한식", 2, "solo,mood"),
-  f("보리비빔밥", "한식", 1, "solo,lab,veg,light"),
-  f("산채비빔밥", "한식", 1, "solo,lab,veg,light"),
   f("콩나물불고기", "한식", 2, "share,booze,spicy1"),
-  f("두루치기", "한식", 2, "share,booze,spicy2,heavy"),
+  f("두루치기", "한식", 2, "share,booze,spicy2,heavy"),         // 돼지주물럭 포함
   f("간장게장", "한식", 3, "share,sea,mood"),
   f("양념게장", "한식", 3, "share,sea,spicy2"),
-  f("보쌈정식", "한식", 2, "share,booze,heavy"),
+  f("보쌈", "한식", 2, "share,booze,heavy"),                    // 보쌈정식 포함
   f("수육백반", "한식", 2, "solo,share,lab"),
-  f("돼지불백", "한식", 1, "solo,lab,heavy"),
-  f("소불고기전골", "한식", 3, "share,mood"),
-  f("낙곱새", "한식", 3, "share,booze,sea,smell,spicy3"),
   f("김치볶음밥", "한식", 1, "solo,lab,spicy1"),
-  f("새우볶음밥", "한식", 1, "solo,lab,sea"),
   f("오므라이스", "한식", 1, "solo,lab,light"),
-  f("돈까스덮밥", "한식", 1, "solo,lab,heavy"),
   f("제육덮밥", "한식", 1, "solo,lab,spicy2"),
   f("오징어덮밥", "한식", 1, "solo,lab,sea,spicy2"),
   f("불고기덮밥", "한식", 1, "solo,lab"),
-  f("잡채", "한식", 2, "share,veg,mood"),
-  f("낙지덮밥", "한식", 2, "solo,lab,sea,spicy2"),
   f("회덮밥", "한식", 2, "solo,lab,sea,light,mood"),
-  f("전복죽", "한식", 2, "solo,sea,light"),
-  f("호박죽", "한식", 1, "solo,veg,light"),
-  f("소고기죽", "한식", 1, "solo,light"),
+  f("죽", "한식", 1, "solo,light"),                             // 전복죽·호박죽·소고기죽
   f("굴국밥", "한식", 1, "solo,lab,sea,light"),
-  f("연잎밥정식", "한식", 3, "share,veg,mood,date"),
-  f("한정식", "한식", 3, "share,mood,date"),
-  f("보리굴비정식", "한식", 3, "share,sea,mood,date"),
-  f("영양돌솥밥", "한식", 2, "solo,veg,mood"),
+  f("한정식", "한식", 3, "share,mood,date"),                    // 연잎밥·보리굴비정식
   f("쌈밥정식", "한식", 2, "share,veg,mood"),
-  f("된장정식", "한식", 1, "solo,lab,veg"),
   f("생선구이백반", "한식", 2, "solo,lab,sea,smell"),
-  f("고등어조림", "한식", 2, "share,sea,spicy1"),
-  f("갈치조림", "한식", 3, "share,sea,spicy1"),
-  f("코다리조림", "한식", 2, "share,sea,spicy2"),
+  f("생선조림", "한식", 2, "share,sea,spicy1"),                 // 고등어·갈치·코다리조림
   f("장어덮밥", "한식", 3, "solo,sea,mood,heavy"),
+  f("잡채", "한식", 2, "share,veg,mood"),
 
-  // ─────────────────────────── 한식: 면 ───────────────────────────
-  f("칼국수", "한식", 1, "solo,lab,light"),
-  f("바지락칼국수", "한식", 1, "solo,lab,sea,light"),
-  f("들깨칼국수", "한식", 1, "solo,lab,veg"),
-  f("장칼국수", "한식", 1, "solo,lab,spicy2"),
-  f("팥칼국수", "한식", 1, "solo,veg,light"),
+  // ─────────────────────── 한식: 면 ───────────────────────
+  f("칼국수", "한식", 1, "solo,lab,light"),                     // 바지락·들깨·장·닭·해물칼국수
   f("콩국수", "한식", 1, "solo,lab,veg,light"),
   f("잔치국수", "한식", 1, "solo,lab,light"),
-  f("비빔국수", "한식", 1, "solo,lab,spicy2,light"),
+  f("비빔국수", "한식", 1, "solo,lab,spicy2,light"),            // 쫄면 포함
   f("막국수", "한식", 1, "solo,lab,spicy1,light"),
-  f("평양냉면", "한식", 2, "solo,lab,light,mood"),
-  f("함흥냉면", "한식", 2, "solo,lab,spicy2,light"),
-  f("밀면", "한식", 1, "solo,lab,light"),
-  f("메밀소바", "한식", 1, "solo,lab,light"),
+  f("냉면", "한식", 2, "solo,lab,light,mood"),                  // 평양·함흥냉면·밀면
   f("수제비", "한식", 1, "solo,lab,veg,light"),
-  f("올챙이국수", "한식", 1, "solo,veg,light"),
-  f("닭칼국수", "한식", 1, "solo,lab"),
-  f("해물칼국수", "한식", 2, "share,sea"),
-  f("쫄면", "한식", 1, "solo,lab,spicy2,light"),
   f("초계국수", "한식", 2, "solo,light,mood"),
-  f("김치말이국수", "한식", 1, "solo,lab,spicy1,light"),
 
-  // ─────────────────────────── 한식: 전·튀김·기타 ───────────────────────────
-  f("해물파전", "한식", 2, "share,booze,sea"),
+  // ─────────────────────── 한식: 전·안주 ───────────────────────
+  f("파전", "한식", 2, "share,booze,sea"),                      // 해물파전 포함
   f("김치전", "한식", 1, "share,booze,veg,spicy1"),
   f("감자전", "한식", 1, "share,booze,veg"),
-  f("녹두빈대떡", "한식", 2, "share,booze,heavy"),
+  f("빈대떡", "한식", 2, "share,booze,heavy"),
   f("모듬전", "한식", 2, "share,booze"),
   f("두부김치", "한식", 1, "share,booze,veg,spicy1"),
   f("골뱅이무침", "한식", 2, "share,booze,sea,spicy2"),
   f("홍어삼합", "한식", 3, "share,booze,smell,sea"),
   f("육회", "한식", 3, "share,booze,mood"),
-  f("육사시미", "한식", 3, "share,booze"),
   f("닭발", "한식", 2, "share,booze,smell,spicy3"),
-  f("불족발", "한식", 2, "share,booze,spicy2,heavy"),
-  f("족발", "한식", 2, "share,booze,heavy"),
-  f("보쌈", "한식", 2, "share,booze,heavy"),
-  f("오븐구이통닭", "한식", 2, "share,booze,heavy"),
+  f("족발", "한식", 2, "share,booze,heavy"),                    // 불족발 포함
   f("찜닭", "한식", 2, "share,booze,spicy1,heavy"),
-  f("춘천닭갈비", "한식", 2, "share,booze,smell,spicy2,heavy"),
-  f("떡갈비", "한식", 3, "share,mood,heavy"),
   f("갈비찜", "한식", 3, "share,mood,date,heavy"),
-  f("궁중떡볶이", "한식", 2, "share,mood,veg"),
-  f("신선로", "한식", 3, "share,mood,date"),
-  f("불고기전골", "한식", 3, "share,mood,date"),
+  f("떡갈비", "한식", 3, "share,mood,heavy"),
 
-  // ─────────────────────────── 고기·구이 ───────────────────────────
+  // ─────────────────────── 고기·구이 ───────────────────────
   f("삼겹살", "고기", 2, "share,booze,smell,heavy"),
-  f("목살구이", "고기", 2, "share,booze,smell,heavy"),
-  f("항정살", "고기", 3, "share,booze,smell,heavy"),
-  f("갈매기살", "고기", 2, "share,booze,smell"),
+  f("돼지고기구이", "고기", 2, "share,booze,smell,heavy"),      // 목살·항정살·갈매기살·가브리살
+  f("소고기구이", "고기", 3, "share,booze,smell,mood,heavy"),   // 등심·안창살·토시살·차돌박이
+  f("소갈비", "고기", 3, "share,booze,smell,mood,date,heavy"),  // 양념갈비·생갈비
   f("돼지갈비", "고기", 2, "share,booze,smell,heavy"),
-  f("고추장삼겹살", "고기", 2, "share,booze,smell,spicy2"),
-  f("소갈비살", "고기", 3, "share,booze,smell,mood,heavy"),
-  f("등심구이", "고기", 3, "share,booze,mood,date,heavy"),
-  f("안창살", "고기", 3, "share,booze,mood,heavy"),
-  f("차돌박이", "고기", 3, "share,booze,smell,heavy"),
-  f("우삼겹", "고기", 2, "share,booze,smell"),
-  f("한우오마카세", "고기", 3, "mood,date"),
-  f("소갈비", "고기", 3, "share,booze,mood,date,heavy"),
-  f("양념갈비", "고기", 3, "share,booze,smell,heavy"),
-  f("생갈비", "고기", 3, "share,booze,smell,heavy"),
   f("양갈비", "고기", 3, "share,booze,smell,mood,heavy"),
   f("양꼬치", "고기", 2, "share,booze,smell"),
-  f("막창", "고기", 3, "share,booze,smell,heavy"),
-  f("대창", "고기", 3, "share,booze,smell,heavy"),
-  f("곱창구이", "고기", 3, "share,booze,smell,heavy"),
-  f("돼지껍데기", "고기", 1, "share,booze,smell"),
-  f("소막창", "고기", 3, "share,booze,smell,heavy"),
+  f("곱창구이", "고기", 3, "share,booze,smell,heavy"),          // 막창·대창
   f("닭갈비", "고기", 2, "share,booze,smell,spicy2,heavy"),
-  f("숯불닭갈비", "고기", 2, "share,booze,smell,spicy2"),
-  f("오리로스", "고기", 2, "share,booze,smell"),
-  f("훈제오리", "고기", 2, "share,booze"),
-  f("오리주물럭", "고기", 2, "share,booze,spicy1"),
+  f("오리고기", "고기", 2, "share,booze,smell"),                // 로스·훈제·주물럭
   f("장어구이", "고기", 3, "share,booze,sea,mood,heavy"),
   f("바베큐립", "고기", 3, "share,booze,mood,heavy"),
-  f("통삼겹바베큐", "고기", 3, "share,booze,heavy"),
-  f("불닭", "고기", 2, "share,booze,spicy3"),
+  f("한우오마카세", "고기", 3, "mood,date"),
+  f("샤브샤브", "고기", 3, "share,mood,date,light"),
+  f("돼지껍데기", "고기", 1, "share,booze,smell"),
   f("닭꼬치", "고기", 1, "solo,share,booze"),
-  f("삼겹살김치말이", "고기", 2, "share,booze,smell"),
-  f("소고기샤브샤브", "고기", 3, "share,mood,date,light"),
-  f("월남쌈샤브", "고기", 2, "share,mood,date,veg,light"),
-  f("한우육회비빔", "고기", 3, "share,mood"),
-  f("스테이크덮밥", "고기", 2, "solo,lab,heavy"),
-  f("김치삼겹두루치기", "고기", 2, "share,booze,spicy2"),
-  f("솥뚜껑삼겹살", "고기", 2, "share,booze,smell,heavy"),
-  f("연탄불고기", "고기", 2, "share,booze,smell"),
-  f("돼지주물럭", "고기", 2, "share,booze,spicy1"),
-  f("닭발볶음", "고기", 2, "share,booze,smell,spicy3"),
-  f("뒷고기", "고기", 2, "share,booze,smell"),
-  f("가브리살", "고기", 2, "share,booze,smell"),
-  f("토시살", "고기", 3, "share,booze,mood"),
 
-  // ─────────────────────────── 분식 ───────────────────────────
-  f("떡볶이", "분식", 1, "solo,share,lab,veg,spicy2,light"),
-  f("로제떡볶이", "분식", 1, "solo,share,lab,spicy1"),
-  f("치즈떡볶이", "분식", 1, "solo,share,lab,spicy1"),
-  f("국물떡볶이", "분식", 1, "solo,share,lab,spicy2"),
+  // ─────────────────────── 분식 ───────────────────────
+  f("떡볶이", "분식", 1, "solo,share,lab,veg,spicy2,light"),    // 로제·치즈·국물떡볶이
   f("즉석떡볶이", "분식", 1, "share,lab,spicy2"),
-  f("짜장떡볶이", "분식", 1, "solo,lab"),
-  f("김밥", "분식", 1, "solo,lab,light"),
-  f("참치김밥", "분식", 1, "solo,lab,sea,light"),
-  f("충무김밥", "분식", 1, "solo,lab,spicy2,light"),
-  f("꼬마김밥", "분식", 1, "solo,lab,light"),
+  f("김밥", "분식", 1, "solo,lab,light"),                       // 참치·충무·꼬마김밥
   f("순대", "분식", 1, "solo,share,smell"),
   f("순대볶음", "분식", 1, "share,booze,smell,spicy2"),
-  f("튀김모듬", "분식", 1, "solo,share,lab,heavy"),
+  f("튀김", "분식", 1, "solo,share,lab,heavy"),
   f("오뎅탕", "분식", 1, "share,booze,sea,light"),
   f("라볶이", "분식", 1, "solo,lab,spicy2"),
-  f("컵밥", "분식", 1, "solo,lab"),
   f("토스트", "분식", 1, "solo,lab,light"),
   f("핫도그", "분식", 1, "solo,lab,light"),
-  f("만두국", "분식", 1, "solo,lab,light"),
-  f("떡만두국", "분식", 1, "solo,lab"),
-  f("고기만두", "분식", 1, "solo,share,lab"),
-  f("김치만두", "분식", 1, "solo,share,lab,spicy1"),
-  f("군만두", "분식", 1, "solo,share,lab,heavy"),
-  f("왕만두", "분식", 1, "solo,lab"),
-  f("찐빵", "분식", 1, "solo,veg,light,dessert"),
-  f("호떡", "분식", 1, "solo,veg,light,dessert"),
-  f("어묵우동", "분식", 1, "solo,lab,sea,light"),
+  f("만두", "분식", 1, "solo,share,lab"),                       // 고기·김치·군만두·왕만두
+  f("만두국", "분식", 1, "solo,lab,light"),                     // 떡만두국 포함
   f("유부초밥", "분식", 1, "solo,lab,veg,light"),
   f("주먹밥", "분식", 1, "solo,lab,light"),
-  f("라면", "분식", 1, "solo,lab,spicy1"),
-  f("치즈라면", "분식", 1, "solo,lab,spicy1"),
-  f("떡라면", "분식", 1, "solo,lab,spicy1"),
-  f("부산어묵", "분식", 1, "solo,share,sea,light"),
-  f("계란빵", "분식", 1, "solo,light,dessert"),
-  f("붕어빵", "분식", 1, "solo,veg,light,dessert"),
+  f("라면", "분식", 1, "solo,lab,spicy1"),                      // 치즈·떡라면
   f("닭강정", "분식", 1, "share,booze,spicy1,heavy"),
-  f("치즈스틱", "분식", 1, "solo,share,heavy"),
-  f("고구마튀김", "분식", 1, "solo,veg"),
-  f("감자튀김", "분식", 1, "solo,share,booze,veg,heavy"),
+  f("호떡", "분식", 1, "solo,veg,light,dessert"),
+  f("붕어빵", "분식", 1, "solo,veg,light,dessert"),
 
-  // ─────────────────────────── 중식 ───────────────────────────
-  f("짜장면", "중식", 1, "solo,lab,heavy"),
-  f("간짜장", "중식", 1, "solo,lab,heavy"),
-  f("삼선짜장", "중식", 1, "solo,lab,sea"),
-  f("유니짜장", "중식", 1, "solo,lab"),
-  f("쟁반짜장", "중식", 2, "share,lab,sea"),
-  f("짬뽕", "중식", 1, "solo,lab,sea,spicy2"),
-  f("삼선짬뽕", "중식", 2, "solo,lab,sea,spicy2"),
-  f("백짬뽕", "중식", 2, "solo,lab,sea"),
-  f("차돌짬뽕", "중식", 2, "solo,lab,spicy2"),
-  f("굴짬뽕", "중식", 2, "solo,sea,spicy2"),
-  f("볶음밥", "중식", 1, "solo,lab"),
-  f("잡채밥", "중식", 1, "solo,lab,veg"),
-  f("울면", "중식", 1, "solo,lab,sea,light"),
-  f("기스면", "중식", 1, "solo,lab,light"),
-  f("탕수육", "중식", 2, "share,booze,heavy"),
-  f("찹쌀탕수육", "중식", 2, "share,booze,heavy"),
-  f("깐풍기", "중식", 2, "share,booze,spicy1"),
-  f("유린기", "중식", 2, "share,booze"),
-  f("라조기", "중식", 2, "share,booze,spicy2"),
-  f("깐쇼새우", "중식", 3, "share,booze,sea,spicy1"),
-  f("칠리새우", "중식", 3, "share,booze,sea,spicy1"),
-  f("크림새우", "중식", 3, "share,sea,mood"),
+  // ─────────────────────── 중식 ───────────────────────
+  f("짜장면", "중식", 1, "solo,lab,heavy"),                     // 간짜장·삼선·유니·쟁반짜장
+  f("짬뽕", "중식", 1, "solo,lab,sea,spicy2"),                  // 삼선·백·차돌·굴짬뽕
+  f("볶음밥", "중식", 1, "solo,lab"),                           // 새우·게살볶음밥
+  f("탕수육", "중식", 2, "share,booze,heavy"),                  // 찹쌀탕수육 포함
+  f("깐풍기", "중식", 2, "share,booze,spicy1"),                 // 라조기·유린기
+  f("깐쇼새우", "중식", 3, "share,booze,sea,spicy1"),           // 칠리새우·크림새우
   f("팔보채", "중식", 3, "share,booze,sea"),
   f("유산슬", "중식", 3, "share,booze,sea"),
-  f("고추잡채", "중식", 2, "share,booze,spicy1"),
-  f("꽃빵고추잡채", "중식", 2, "share,booze,spicy1"),
+  f("고추잡채", "중식", 2, "share,booze,spicy1"),               // 꽃빵 포함
   f("양장피", "중식", 3, "share,booze,sea,mood"),
-  f("깐풍새우", "중식", 3, "share,sea,spicy1"),
   f("마파두부", "중식", 1, "solo,lab,veg,spicy2"),
   f("마라탕", "중식", 2, "solo,lab,spicy3"),
-  f("마라샹궈", "중식", 2, "share,booze,spicy3,heavy"),
-  f("마라룽샤", "중식", 3, "share,booze,sea,spicy3"),
+  f("마라샹궈", "중식", 2, "share,booze,spicy3,heavy"),         // 마라룽샤 포함
   f("훠궈", "중식", 3, "share,booze,spicy2,heavy"),
-  f("양꼬치와칭따오", "중식", 2, "share,booze,smell"),
   f("꿔바로우", "중식", 2, "share,booze,heavy"),
   f("동파육", "중식", 3, "share,booze,heavy"),
   f("북경오리", "중식", 3, "share,mood,date,heavy"),
-  f("딤섬", "중식", 2, "share,mood,date,light"),
-  f("샤오롱바오", "중식", 2, "share,mood,light"),
-  f("하가우", "중식", 2, "share,sea,mood,light"),
-  f("소룡포", "중식", 2, "share,mood,light"),
+  f("딤섬", "중식", 2, "share,mood,date,light"),                // 샤오롱바오·하가우
   f("탄탄면", "중식", 1, "solo,lab,spicy2"),
-  f("우육면", "중식", 2, "solo,lab,heavy"),
-  f("도삭면", "중식", 1, "solo,lab"),
-  f("비빔짬뽕", "중식", 2, "solo,sea,spicy3"),
-  f("중화비빔밥", "중식", 1, "solo,lab,spicy2"),
+  f("우육면", "중식", 2, "solo,lab,heavy"),                     // 도삭면 포함
   f("멘보샤", "중식", 3, "share,booze,sea,heavy"),
-  f("게살볶음밥", "중식", 2, "solo,lab,sea"),
-  f("새우볶음면", "중식", 2, "solo,sea"),
-  f("가지튀김", "중식", 2, "share,veg,booze"),
-  f("어향가지", "중식", 2, "share,veg,spicy1"),
+  f("어향가지", "중식", 2, "share,veg,spicy1"),                 // 가지튀김 포함
   f("쿵파오치킨", "중식", 2, "share,booze,spicy2"),
-  f("훈툰탕", "중식", 1, "solo,lab,light"),
-  f("짜사이볶음밥", "중식", 1, "solo,lab,veg"),
 
-  // ─────────────────────────── 일식 ───────────────────────────
-  f("초밥", "일식", 2, "solo,share,sea,mood,date,light"),
+  // ─────────────────────── 일식 ───────────────────────
+  f("초밥", "일식", 2, "solo,share,sea,mood,date,light"),       // 연어·장어초밥
   f("스시오마카세", "일식", 3, "sea,mood,date"),
-  f("사시미", "일식", 3, "share,booze,sea,mood,date"),
-  f("모듬회", "일식", 3, "share,booze,sea,mood"),
-  f("연어초밥", "일식", 2, "solo,sea,mood,light"),
-  f("장어초밥", "일식", 3, "solo,sea,mood"),
-  f("사케동", "일식", 2, "solo,lab,sea,mood,light"),
-  f("치라시동", "일식", 3, "solo,sea,mood,date"),
+  f("사시미", "일식", 3, "share,booze,sea,mood,date"),          // 모듬회 포함
+  f("사케동", "일식", 2, "solo,lab,sea,mood,light"),            // 치라시동·가이센동·우니동
   f("가츠동", "일식", 1, "solo,lab,heavy"),
-  f("규동", "일식", 1, "solo,lab"),
+  f("규동", "일식", 1, "solo,lab"),                             // 부타동 포함
   f("오야코동", "일식", 1, "solo,lab"),
   f("텐동", "일식", 2, "solo,lab,sea,heavy"),
-  f("우나기동", "일식", 3, "solo,sea,mood,heavy"),
-  f("부타동", "일식", 1, "solo,lab,heavy"),
-  f("돈코츠라멘", "일식", 1, "solo,lab,heavy"),
-  f("시오라멘", "일식", 1, "solo,lab,light"),
-  f("쇼유라멘", "일식", 1, "solo,lab"),
-  f("미소라멘", "일식", 1, "solo,lab"),
+  f("장어덮밥(우나기동)", "일식", 3, "solo,sea,mood,heavy"),
+  f("라멘", "일식", 1, "solo,lab,heavy"),                       // 돈코츠·시오·쇼유·미소라멘
   f("츠케멘", "일식", 2, "solo,lab,heavy"),
   f("마제소바", "일식", 1, "solo,lab,spicy1"),
-  f("탄탄멘", "일식", 1, "solo,lab,spicy2"),
-  f("가케우동", "일식", 1, "solo,lab,veg,light"),
-  f("붓카케우동", "일식", 1, "solo,lab,light"),
-  f("자루소바", "일식", 1, "solo,lab,veg,light"),
-  f("텐푸라소바", "일식", 2, "solo,lab,sea"),
-  f("냉모밀", "일식", 1, "solo,lab,veg,light"),
-  f("돈까스", "일식", 1, "solo,lab,heavy"),
-  f("등심돈까스", "일식", 2, "solo,lab,heavy"),
-  f("치즈돈까스", "일식", 2, "solo,lab,heavy"),
-  f("카레돈까스", "일식", 2, "solo,lab,spicy1,heavy"),
-  f("일본식카레", "일식", 1, "solo,lab,spicy1"),
+  f("우동", "일식", 1, "solo,lab,veg,light"),                   // 가케·붓카케우동
+  f("소바", "일식", 1, "solo,lab,veg,light"),                   // 자루소바·냉모밀·텐푸라소바
+  f("돈까스", "일식", 1, "solo,lab,heavy"),                     // 등심·치즈·카레돈까스
+  f("규카츠", "일식", 2, "solo,lab,heavy"),                     // 멘치카츠 포함
+  f("일본식카레", "일식", 1, "solo,lab,spicy1"),                // 카츠카레 포함
   f("함박스테이크", "일식", 2, "solo,lab,mood,heavy"),
-  f("에비후라이", "일식", 2, "solo,sea,heavy"),
   f("고로케", "일식", 1, "solo,light"),
   f("오코노미야키", "일식", 2, "share,booze,sea"),
   f("야키소바", "일식", 1, "solo,lab"),
   f("타코야키", "일식", 1, "solo,share,sea,light"),
-  f("야키토리", "일식", 2, "share,booze,mood"),
-  f("이자카야모듬", "일식", 3, "share,booze,mood"),
+  f("야키토리", "일식", 2, "share,booze,mood"),                 // 이자카야 꼬치 모듬
   f("스키야키", "일식", 3, "share,mood,date,heavy"),
-  f("샤브샤브", "일식", 3, "share,mood,date,light"),
-  f("나베", "일식", 2, "share,booze,mood"),
-  f("모츠나베", "일식", 3, "share,booze,smell"),
-  f("가이센동", "일식", 3, "solo,sea,mood,light"),
-  f("연어스테이크", "일식", 3, "solo,sea,mood,date"),
-  f("장어정식", "일식", 3, "solo,sea,mood,heavy"),
+  f("나베", "일식", 2, "share,booze,mood"),                     // 모츠나베 포함
+  f("생선구이정식", "일식", 2, "solo,lab,sea,smell"),           // 사바시오야키·샤케정식
   f("정식도시락", "일식", 2, "solo,lab,mood"),
-  f("규카츠", "일식", 2, "solo,lab,heavy"),
-  f("멘치카츠", "일식", 2, "solo,lab,heavy"),
   f("차완무시", "일식", 2, "solo,light,mood"),
-  f("낫토정식", "일식", 1, "solo,smell,veg,light"),
-  f("스테이크동", "일식", 2, "solo,lab,heavy"),
-  f("가라아게", "일식", 1, "solo,share,booze,heavy"),
-  f("스지오뎅", "일식", 2, "share,booze,light"),
-  f("명란파스타", "일식", 2, "solo,sea,mood"),
-  f("우니동", "일식", 3, "solo,sea,mood,date"),
-  f("복어정식", "일식", 3, "share,sea,mood,date"),
-  f("샤케정식", "일식", 2, "solo,lab,sea,light"),
-  f("사바시오야키", "일식", 2, "solo,lab,sea,smell"),
-  f("멘타이코동", "일식", 2, "solo,sea,light"),
-  f("돈지루정식", "일식", 1, "solo,lab"),
-  f("카츠카레", "일식", 2, "solo,lab,spicy1,heavy"),
-  f("우동전골", "일식", 2, "share,light"),
-  f("치킨난반", "일식", 2, "solo,lab,heavy"),
+  f("가라아게", "일식", 1, "solo,share,booze,heavy"),           // 치킨난반 포함
   f("교자", "일식", 1, "solo,share,booze"),
-  f("텐카츠정식", "일식", 2, "solo,lab,sea,heavy"),
-  f("소바정식", "일식", 2, "solo,lab,light,mood"),
 
-  // ─────────────────────────── 양식: 파스타·피자 ───────────────────────────
-  f("까르보나라", "양식", 2, "solo,lab,mood,date,heavy"),
-  f("알리오올리오", "양식", 2, "solo,lab,veg,mood,light"),
-  f("토마토파스타", "양식", 2, "solo,lab,veg,mood"),
+  // ─────────────────────── 양식: 파스타·피자 ───────────────────────
+  f("크림파스타", "양식", 2, "solo,lab,mood,date,heavy"),       // 까르보나라·트러플크림
+  f("토마토파스타", "양식", 2, "solo,lab,veg,mood"),            // 아라비아타·라구
+  f("오일파스타", "양식", 2, "solo,sea,mood,date,light"),       // 알리오올리오·봉골레·해산물
   f("로제파스타", "양식", 2, "solo,lab,mood,date"),
-  f("봉골레파스타", "양식", 2, "solo,sea,mood,date,light"),
-  f("해산물파스타", "양식", 3, "share,sea,mood,date"),
-  f("트러플파스타", "양식", 3, "mood,date"),
-  f("라구파스타", "양식", 2, "solo,mood,heavy"),
-  f("아라비아타", "양식", 2, "solo,veg,mood,spicy2"),
-  f("바질페스토파스타", "양식", 2, "solo,veg,mood,light"),
   f("라자냐", "양식", 3, "share,mood,date,heavy"),
   f("뇨끼", "양식", 2, "solo,veg,mood"),
-  f("리조또", "양식", 2, "solo,mood,date"),
-  f("해산물리조또", "양식", 3, "solo,sea,mood,date"),
-  f("트러플리조또", "양식", 3, "mood,date"),
-  f("마르게리타피자", "양식", 2, "share,veg,mood,date"),
-  f("페퍼로니피자", "양식", 2, "share,booze,heavy"),
-  f("고르곤졸라피자", "양식", 2, "share,veg,mood,date"),
-  f("불고기피자", "양식", 2, "share,booze,heavy"),
-  f("포테이토피자", "양식", 2, "share,booze,veg,heavy"),
-  f("시카고피자", "양식", 3, "share,booze,heavy"),
-  f("화덕피자", "양식", 2, "share,mood,date"),
+  f("리조또", "양식", 2, "solo,mood,date"),                     // 해산물·트러플리조또
+  f("피자", "양식", 2, "share,booze,mood,heavy"),               // 마르게리타·페퍼로니·고르곤졸라 등
 
-  // ─────────────────────────── 양식: 고기·메인 ───────────────────────────
-  f("스테이크", "양식", 3, "mood,date,booze,heavy"),
-  f("티본스테이크", "양식", 3, "share,mood,date,booze,heavy"),
-  f("립아이스테이크", "양식", 3, "mood,date,booze,heavy"),
-  f("안심스테이크", "양식", 3, "mood,date,heavy"),
-  f("램찹", "양식", 3, "share,mood,date,booze,heavy"),
-  f("치킨스테이크", "양식", 2, "solo,lab,mood"),
-  f("포크커틀릿", "양식", 2, "solo,lab,heavy"),
-  f("BBQ립", "양식", 3, "share,booze,heavy"),
-  f("로스트치킨", "양식", 3, "share,booze,heavy"),
-  f("비프웰링턴", "양식", 3, "mood,date,heavy"),
+  // ─────────────────────── 양식: 메인 ───────────────────────
+  f("스테이크", "양식", 3, "mood,date,booze,heavy"),            // 티본·립아이·안심
   f("코스요리", "양식", 3, "mood,date"),
   f("부야베스", "양식", 3, "share,sea,mood,date"),
   f("빠에야", "양식", 3, "share,sea,mood,date"),
   f("감바스", "양식", 2, "share,booze,sea,mood,date"),
-  f("스페인식타파스", "양식", 2, "share,booze,mood,date"),
-  f("치킨파히타", "양식", 2, "share,booze,spicy1"),
-  f("문어숙회플래터", "양식", 3, "share,booze,sea,mood"),
-  f("연어스테이크플레이트", "양식", 3, "solo,sea,mood,date,light"),
-  f("치킨커틀릿", "양식", 2, "solo,lab,heavy"),
-  f("미트볼", "양식", 2, "share,booze,heavy"),
+  f("타파스", "양식", 2, "share,booze,mood,date"),
+  f("연어스테이크", "양식", 3, "solo,sea,mood,date,light"),
+  f("소시지플래터", "양식", 3, "share,booze,smell,heavy"),      // 슈니첼·학센·독일식
   f("굴라쉬", "양식", 2, "solo,heavy"),
-  f("슈니첼", "양식", 3, "share,booze,heavy"),
-  f("소시지플래터", "양식", 3, "share,booze,smell,heavy"),
-  f("학센", "양식", 3, "share,booze,heavy"),
-  f("프렌치어니언수프", "양식", 2, "solo,veg,mood,light"),
-  f("클램차우더", "양식", 2, "solo,sea,light"),
-  f("미네스트로네", "양식", 1, "solo,veg,light"),
+  f("수프", "양식", 1, "solo,lab,veg,light"),                   // 어니언수프·클램차우더·미네스트로네
   f("라따뚜이", "양식", 2, "share,veg,mood,light"),
 
-  // ─────────────────────────── 양식: 캐주얼 ───────────────────────────
-  f("햄버거", "양식", 1, "solo,lab,heavy"),
-  f("수제버거", "양식", 2, "solo,lab,heavy"),
-  f("치즈버거", "양식", 1, "solo,lab,heavy"),
-  f("치킨버거", "양식", 1, "solo,lab,heavy"),
-  f("핫도그샌드", "양식", 1, "solo,lab,light"),
-  f("클럽샌드위치", "양식", 1, "solo,lab,light"),
-  f("파니니", "양식", 1, "solo,lab,light,mood"),
-  f("베이글샌드위치", "양식", 1, "solo,lab,light"),
-  f("치아바타샌드위치", "양식", 1, "solo,lab,light"),
-  f("부리또볼", "양식", 2, "solo,lab,spicy1"),
-  f("연어포케", "양식", 2, "solo,lab,sea,mood,light"),
-  f("치킨샐러드", "양식", 2, "solo,lab,light,mood"),
-  f("시저샐러드", "양식", 1, "solo,lab,veg,light"),
+  // ─────────────────────── 양식: 캐주얼 ───────────────────────
+  f("햄버거", "양식", 1, "solo,lab,heavy"),                     // 수제·치즈·치킨버거
+  f("샌드위치", "양식", 1, "solo,lab,light"),                   // 클럽·파니니·베이글·치아바타
+  f("샐러드", "양식", 1, "solo,lab,veg,light,mood"),            // 시저·치킨샐러드
+  f("포케", "양식", 2, "solo,lab,sea,mood,light"),
   f("카프레제", "양식", 2, "share,veg,mood,date,light"),
-  f("치킨텐더", "양식", 1, "solo,share,booze,heavy"),
   f("피쉬앤칩스", "양식", 2, "share,booze,sea,heavy"),
   f("맥앤치즈", "양식", 1, "solo,veg,heavy"),
-  f("퀘사디아", "양식", 1, "solo,share,booze"),
-  f("나초", "양식", 1, "share,booze,veg,spicy1"),
-  f("치킨윙", "양식", 2, "share,booze,spicy1,heavy"),
-  f("어니언링", "양식", 1, "share,booze,veg,heavy"),
-  f("리조또볼", "양식", 1, "solo,lab"),
   f("오믈렛", "양식", 1, "solo,lab,veg,light"),
   f("에그베네딕트", "양식", 2, "solo,mood,date,light"),
-  f("프렌치토스트", "양식", 1, "solo,veg,mood,light"),
-  f("팬케이크", "양식", 1, "solo,veg,mood,light"),
-  f("와플브런치", "양식", 2, "solo,mood,date,light"),
-  f("아보카도토스트", "양식", 2, "solo,veg,mood,light"),
-  f("그릭요거트볼", "양식", 1, "solo,veg,light"),
-  f("스프와빵", "양식", 1, "solo,lab,veg,light"),
+  f("감자튀김", "양식", 1, "solo,share,booze,veg,heavy"),
 
-  // ─────────────────────────── 아시안 ───────────────────────────
+  // ─────────────────────── 아시안 ───────────────────────
   f("쌀국수", "아시안", 1, "solo,lab,light"),
   f("분짜", "아시안", 2, "solo,lab,mood,light"),
   f("반미", "아시안", 1, "solo,lab,light"),
   f("월남쌈", "아시안", 2, "share,veg,mood,date,light"),
-  f("분보후에", "아시안", 2, "solo,spicy2"),
   f("짜조", "아시안", 1, "solo,share,booze"),
   f("반쎄오", "아시안", 2, "share,mood"),
-  f("베트남식볶음쌀국수", "아시안", 1, "solo,lab"),
   f("팟타이", "아시안", 1, "solo,lab,sea"),
   f("똠얌꿍", "아시안", 2, "share,sea,spicy2"),
-  f("그린커리", "아시안", 2, "solo,share,spicy2"),
-  f("레드커리", "아시안", 2, "solo,share,spicy3"),
-  f("마사만커리", "아시안", 2, "solo,share,spicy1"),
-  f("카오팟", "아시안", 1, "solo,lab"),
-  f("팟카파오무쌉", "아시안", 1, "solo,lab,spicy2"),
+  f("태국커리", "아시안", 2, "solo,share,spicy2"),              // 그린·레드·마사만커리
+  f("카오팟", "아시안", 1, "solo,lab"),                         // 팟카파오 포함
   f("쏨땀", "아시안", 1, "share,veg,spicy2,light"),
-  f("망고스티키라이스", "아시안", 1, "solo,veg,light,dessert"),
   f("푸팟퐁커리", "아시안", 3, "share,sea,mood,date"),
-  f("타이수끼", "아시안", 2, "share,spicy1"),
-  f("나시고랭", "아시안", 1, "solo,lab,spicy1"),
-  f("미고랭", "아시안", 1, "solo,lab,spicy1"),
+  f("나시고랭", "아시안", 1, "solo,lab,spicy1"),                // 미고랭 포함
   f("사테", "아시안", 2, "share,booze"),
   f("락사", "아시안", 2, "solo,sea,spicy2"),
   f("바쿠테", "아시안", 2, "share,heavy"),
   f("하이난치킨라이스", "아시안", 1, "solo,lab,light"),
-  f("버터치킨커리", "아시안", 2, "solo,share,mood,spicy1"),
-  f("치킨티카마살라", "아시안", 2, "solo,share,spicy2"),
-  f("팔락파니르", "아시안", 2, "share,veg,mood"),
+  f("인도커리", "아시안", 2, "solo,share,mood,spicy1"),         // 버터치킨·티카마살라·팔락파니르·달
   f("탄두리치킨", "아시안", 2, "share,booze,spicy1"),
-  f("난과커리세트", "아시안", 2, "solo,lab,veg,mood"),
   f("비리야니", "아시안", 2, "solo,share,spicy1,heavy"),
   f("사모사", "아시안", 1, "solo,share,veg"),
-  f("달커리", "아시안", 1, "solo,veg,light"),
-  f("케밥", "아시안", 1, "solo,lab,heavy"),
-  f("케밥플레이트", "아시안", 2, "solo,share,heavy"),
+  f("케밥", "아시안", 1, "solo,lab,heavy"),                     // 샤와르마·이스켄데르
   f("팔라펠", "아시안", 1, "solo,veg,light"),
-  f("후무스플래터", "아시안", 2, "share,veg,mood,light"),
-  f("샤와르마", "아시안", 1, "solo,lab,heavy"),
-  f("피데", "아시안", 2, "share,mood"),
-  f("라흐마준", "아시안", 1, "solo,share"),
-  f("이스켄데르케밥", "아시안", 3, "share,mood,heavy"),
-  f("몽골리안비프", "아시안", 2, "share,booze,heavy"),
-  f("우즈벡플롭", "아시안", 2, "share,heavy"),
+  f("후무스", "아시안", 2, "share,veg,mood,light"),
   f("샤슬릭", "아시안", 2, "share,booze,smell"),
-  f("네팔모모", "아시안", 1, "solo,share,light"),
-  f("라오스랍", "아시안", 2, "share,spicy2"),
+  f("모모", "아시안", 1, "solo,share,light"),
   f("아도보", "아시안", 2, "solo,share,heavy"),
-  f("시니강", "아시안", 2, "share,sea,light"),
   f("룬당", "아시안", 2, "solo,share,spicy2,heavy"),
-  f("차슈덮밥", "아시안", 2, "solo,lab,heavy"),
   f("완탕면", "아시안", 1, "solo,lab,light"),
-  f("아시안누들볼", "아시안", 1, "solo,lab,light"),
-  f("커리우동", "아시안", 1, "solo,lab,spicy1"),
-  f("타이볶음면", "아시안", 1, "solo,lab"),
-  f("코코넛치킨수프", "아시안", 2, "solo,light,mood"),
 
-  // ─────────────────────────── 멕시칸·남미 ───────────────────────────
-  f("타코", "멕시칸", 1, "solo,share,booze,spicy1"),
-  f("알파스토르타코", "멕시칸", 2, "share,booze,spicy1"),
-  f("생선타코", "멕시칸", 2, "share,booze,sea,light"),
-  f("부리또", "멕시칸", 1, "solo,lab,heavy"),
-  f("치미창가", "멕시칸", 2, "solo,share,heavy"),
+  // ─────────────────────── 멕시칸·남미 ───────────────────────
+  f("타코", "멕시칸", 1, "solo,share,booze,spicy1"),            // 알파스토르·생선타코
+  f("부리또", "멕시칸", 1, "solo,lab,heavy"),                   // 치미창가 포함
   f("엔칠라다", "멕시칸", 2, "share,spicy2"),
-  f("타코샐러드", "멕시칸", 1, "solo,lab,light"),
-  f("과카몰리와칩", "멕시칸", 1, "share,booze,veg,light"),
-  f("케사디아플래터", "멕시칸", 2, "share,booze"),
-  f("멕시칸볼", "멕시칸", 1, "solo,lab,spicy1"),
-  f("치폴레치킨", "멕시칸", 2, "solo,spicy2"),
-  f("세비체", "멕시칸", 2, "share,sea,mood,date,light"),
-  f("아사도", "멕시칸", 3, "share,booze,heavy"),
-  f("슈하스코", "멕시칸", 3, "share,booze,mood,heavy"),
-  f("엠파나다", "멕시칸", 1, "solo,share,booze"),
-  f("아레파", "멕시칸", 1, "solo,light"),
-  f("페루식로모살타도", "멕시칸", 2, "solo,share,heavy"),
+  f("퀘사디아", "멕시칸", 1, "solo,share,booze"),
+  f("나초", "멕시칸", 1, "share,booze,veg,spicy1"),
+  f("과카몰리", "멕시칸", 1, "share,booze,veg,light"),
+  f("파히타", "멕시칸", 3, "share,booze,mood"),
   f("칠리콘카르네", "멕시칸", 2, "share,booze,spicy2,heavy"),
-  f("파히타플래터", "멕시칸", 3, "share,booze,mood"),
-  f("나초그란데", "멕시칸", 2, "share,booze,spicy1,heavy"),
-  f("타코벨식크런치랩", "멕시칸", 1, "solo,lab,heavy"),
-  f("몰레치킨", "멕시칸", 3, "share,mood,spicy1"),
-  f("포솔레", "멕시칸", 2, "share,spicy2"),
-  f("멕시칸스트리트콘", "멕시칸", 1, "share,booze,veg,light"),
+  f("세비체", "멕시칸", 2, "share,sea,mood,date,light"),
+  f("슈하스코", "멕시칸", 3, "share,booze,mood,heavy"),         // 아사도 포함
+  f("엠파나다", "멕시칸", 1, "solo,share,booze"),
 
-  // ─────────────────────────── 술안주·2차 ───────────────────────────
-  f("후라이드치킨", "술안주", 2, "share,booze,heavy"),
-  f("양념치킨", "술안주", 2, "share,booze,spicy1,heavy"),
-  f("간장치킨", "술안주", 2, "share,booze,heavy"),
-  f("파닭", "술안주", 2, "share,booze"),
-  f("반반치킨", "술안주", 2, "share,booze,spicy1,heavy"),
-  f("마늘치킨", "술안주", 2, "share,booze,smell,heavy"),
-  f("불닭발", "술안주", 2, "share,booze,smell,spicy3"),
+  // ─────────────────────── 술안주·2차 ───────────────────────
+  f("후라이드치킨", "술안주", 2, "share,booze,heavy"),          // 파닭·마늘치킨
+  f("양념치킨", "술안주", 2, "share,booze,spicy1,heavy"),       // 간장·반반치킨
   f("오돌뼈", "술안주", 2, "share,booze,spicy2"),
   f("계란말이", "술안주", 1, "share,booze,veg,light"),
-  f("나가사키짬뽕탕", "술안주", 2, "share,booze,sea,spicy1"),
-  f("오징어숙회", "술안주", 2, "share,booze,sea,light"),
-  f("멍게비빔밥", "술안주", 2, "solo,sea,mood"),
-  f("해물찜", "술안주", 3, "share,booze,sea,spicy2"),
-  f("조개찜", "술안주", 2, "share,booze,sea,light"),
-  f("홍합탕", "술안주", 1, "share,booze,sea,light"),
-  f("새우구이", "술안주", 3, "share,booze,sea,mood"),
-  f("가리비구이", "술안주", 3, "share,booze,sea,mood"),
+  f("조개찜", "술안주", 2, "share,booze,sea,light"),            // 홍합탕 포함
+  f("새우·가리비구이", "술안주", 3, "share,booze,sea,mood"),
   f("전복구이", "술안주", 3, "share,booze,sea,mood,date"),
   f("문어숙회", "술안주", 3, "share,booze,sea,mood"),
+  f("오징어숙회", "술안주", 2, "share,booze,sea,light"),
+  f("해물찜", "술안주", 3, "share,booze,sea,spicy2"),
   f("과메기", "술안주", 3, "share,booze,sea,smell"),
-  f("모듬사시미플래터", "술안주", 3, "share,booze,sea,mood"),
   f("육전", "술안주", 2, "share,booze,mood"),
-  f("차돌된장", "술안주", 2, "share,booze"),
-  f("계란찜", "술안주", 1, "share,booze,veg,light"),
-  f("치즈감자전", "술안주", 2, "share,booze,veg"),
-  f("먹태", "술안주", 1, "share,booze,sea,light"),
-  f("노가리", "술안주", 1, "share,booze,sea,light"),
-  f("황도", "술안주", 1, "share,booze,veg,light"),
-  f("소시지야채볶음", "술안주", 1, "share,booze"),
-  f("치즈플래터", "술안주", 3, "share,booze,veg,mood,date,light"),
-  f("하몽플래터", "술안주", 3, "share,booze,mood,date,light"),
-  f("와인바안주", "술안주", 3, "share,booze,mood,date"),
+  f("마른안주", "술안주", 1, "share,booze,sea,light"),          // 먹태·노가리·황도
+  f("치즈·하몽플래터", "술안주", 3, "share,booze,mood,date,light"),
 
-  // ─────────────────────────── 카페·브런치·디저트 ───────────────────────────
-  f("브런치플레이트", "카페", 2, "solo,mood,date,light"),
-  f("샐러드보울", "카페", 1, "solo,lab,veg,light"),
-  f("수프앤샐러드", "카페", 1, "solo,lab,veg,light"),
-  f("크로플", "카페", 1, "solo,veg,mood,date,light,dessert"),
-  f("티라미수", "카페", 1, "solo,veg,mood,date,light,dessert"),
-  f("치즈케이크", "카페", 1, "solo,veg,mood,date,light,dessert"),
-  f("당근케이크", "카페", 1, "solo,veg,mood,light,dessert"),
-  f("마카롱", "카페", 1, "solo,veg,mood,date,light,dessert"),
-  f("스콘과잼", "카페", 1, "solo,veg,mood,light,dessert"),
-  f("크루아상", "카페", 1, "solo,veg,mood,light,dessert"),
-  f("소금빵", "카페", 1, "solo,veg,light,dessert"),
-  f("에그타르트", "카페", 1, "solo,veg,mood,light,dessert"),
-  f("빙수", "카페", 2, "share,veg,mood,date,light,dessert"),
-  f("망고빙수", "카페", 2, "share,veg,mood,date,light,dessert"),
-  f("아이스크림", "카페", 1, "solo,veg,mood,light,dessert"),
-  f("젤라또", "카페", 1, "solo,veg,mood,date,light,dessert"),
-  f("와플", "카페", 1, "solo,veg,mood,date,light,dessert"),
-  f("팬케이크스택", "카페", 2, "solo,veg,mood,date,dessert"),
-  f("도넛", "카페", 1, "solo,veg,light,dessert"),
-  f("베이글과크림치즈", "카페", 1, "solo,lab,veg,light"),
-  f("샌드위치세트", "카페", 1, "solo,lab,light"),
+  // ─────────────────────── 카페·브런치·디저트 ───────────────────────
+  f("브런치플레이트", "카페", 2, "solo,mood,date,light"),       // 팬케이크·프렌치토스트·와플
   f("퀴시", "카페", 2, "solo,mood,light"),
-  f("스무디볼", "카페", 1, "solo,veg,mood,light,dessert"),
-  f("아사이볼", "카페", 2, "solo,veg,mood,light,dessert"),
-  f("약과", "카페", 1, "solo,veg,light,dessert"),
-  f("한과와차", "카페", 1, "share,veg,mood,light,dessert"),
-  f("팥빙수", "카페", 2, "share,veg,mood,light,dessert"),
+  f("케이크", "카페", 1, "solo,veg,mood,date,light,dessert"),   // 치즈·당근케이크·티라미수
+  f("마카롱", "카페", 1, "solo,veg,mood,date,light,dessert"),
+  f("베이커리", "카페", 1, "solo,veg,mood,light,dessert"),      // 크루아상·소금빵·스콘·에그타르트
+  f("크로플", "카페", 1, "solo,veg,mood,date,light,dessert"),
+  f("빙수", "카페", 2, "share,veg,mood,date,light,dessert"),    // 팥·망고빙수
+  f("아이스크림", "카페", 1, "solo,veg,mood,light,dessert"),    // 젤라또 포함
+  f("도넛", "카페", 1, "solo,veg,light,dessert"),
+  f("스무디볼", "카페", 1, "solo,veg,mood,light,dessert"),      // 아사이볼 포함
+  f("약과", "카페", 1, "solo,veg,light,dessert"),               // 한과 포함
   f("호두과자", "카페", 1, "solo,veg,light,dessert"),
-  f("떡카페세트", "카페", 1, "share,veg,mood,light,dessert"),
-  f("초콜릿퐁듀", "카페", 2, "share,veg,mood,date,light,dessert"),
 
 ];

@@ -2,7 +2,7 @@
    전략: 네트워크 우선, 실패하면 캐시.
    (캐시 우선으로 하면 foods.js 를 수정해서 올려도 폰에 계속 옛날 버전이 뜬다) */
 
-const CACHE = "mealpicker-v3";
+const CACHE = "mealpicker-v4";
 const ASSETS = [
   "./",
   "./index.html",
