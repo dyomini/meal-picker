@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>점메추 / 저메추</title>
+  <link rel="stylesheet" href="style.css">
+
+  <!-- 홈 화면에 추가하면 앱처럼 실행된다 -->
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <meta name="theme-color" content="#d94f2b">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="점메추">
+</head>
+<body>
+
+  <header class="topbar">
+    <h1>오늘 뭐 먹지</h1>
+    <button id="settingsBtn" class="icon-btn" title="제외 목록 관리">⚙️</button>
+  </header>
+
+  <!-- 상황 선택 -->
+  <nav id="tabs" class="tabs"></nav>
+  <p id="sceneHint" class="hint"></p>
+
+  <!-- 점심 / 저녁 -->
+  <div class="meal-toggle">
+    <button data-meal="lunch">☀️ 점심</button>
+    <button data-meal="dinner">🌙 저녁</button>
+  </div>
+
+  <!-- 결과 -->
+  <main id="stage" class="stage"></main>
+
+  <button id="rollBtn" class="roll-btn">뽑기</button>
+
+  <div id="actions" class="actions hidden">
+    <button id="againBtn" class="btn primary">🎲 다시 뽑기</button>
+    <button id="excludeSceneBtn" class="btn warn">이 상황엔 빼줘</button>
+    <button id="excludeAllBtn" class="btn danger">아예 안 먹어</button>
+  </div>
+
+  <p id="poolInfo" class="pool-info"></p>
+
+  <!-- 이번 뽑기에만 적용되는 필터 -->
+  <details class="filters">
+    <summary>필터</summary>
+    <div class="filter-body">
+      <label class="filter-row">
+        <span>맵기</span>
+        <input type="range" id="spicyRange" min="0" max="3" step="1">
+        <span id="spicyLabel" class="filter-value"></span>
+      </label>
+      <label class="check"><input type="checkbox" id="noSea"> 해산물 빼기</label>
+      <label class="check"><input type="checkbox" id="vegOnly"> 채식 가능한 것만</label>
+      <label class="check"><input type="checkbox" id="withDessert"> 디저트도 포함</label>
+    </div>
+  </details>
+
+  <!-- 설정 / 제외 목록 -->
+  <div id="settings" class="modal hidden">
+    <div class="modal-box">
+      <div class="modal-head">
+        <h2>제외 목록</h2>
+        <button id="closeSettings" class="icon-btn">✕</button>
+      </div>
+
+      <div class="modal-body">
+        <section>
+          <h3>🚫 아예 안 먹는 음식 <span class="badge" id="excludedCount">0</span></h3>
+          <p class="muted small">모든 상황에서 빠집니다.</p>
+          <div id="excludedList" class="list"></div>
+        </section>
+
+        <section>
+          <h3>🎯 상황별로 뺀 음식</h3>
+          <p class="muted small">해당 상황에서만 빠집니다. 상황별 자동 규칙(회식이면 나눠먹는 음식만 등)은 여기 없어도 항상 적용됩니다.</p>
+          <div id="sceneLists"></div>
+        </section>
+
+        <section>
+          <h3>🔍 미리 찾아서 빼기</h3>
+          <input type="text" id="search" class="search" placeholder="예: 곱창, 한식, 파스타">
+          <div id="searchResults" class="list"></div>
+        </section>
+
+        <section>
+          <h3>💾 백업</h3>
+          <p class="muted small">브라우저 데이터를 지우면 제외 목록이 날아갑니다. 가끔 내보내서 보관해 두세요.</p>
+          <div class="backup-btns">
+            <button id="exportBtn" class="btn">내보내기</button>
+            <button id="importBtn" class="btn">불러오기</button>
+          </div>
+          <textarea id="backupText" class="backup-text" rows="3" placeholder="내보내기를 누르면 여기에 백업 내용이 나옵니다. 복원할 땐 여기에 붙여넣고 불러오기를 누르세요."></textarea>
+          <p id="backupMsg" class="muted small"></p>
+        </section>
+
+        <section>
+          <button id="resetBtn" class="btn wide">제외 목록 전체 초기화</button>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <script src="foods.js"></script>
+  <script src="app.js"></script>
+
+  <script>
+    // 오프라인 지원. file:// 로 열었을 때는 등록되지 않으므로 조건을 건다.
+    if ("serviceWorker" in navigator && location.protocol.startsWith("http")) {
+      window.addEventListener("load", function () {
+        navigator.serviceWorker.register("sw.js").catch(function (e) {
+          console.warn("서비스 워커 등록 실패:", e);
+        });
+      });
+    }
+  </script>
+</body>
+</html>
