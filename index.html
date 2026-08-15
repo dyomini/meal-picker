@@ -88,6 +88,36 @@
         </section>
 
         <section>
+          <h3>🔄 기기 간 동기화</h3>
+
+          <p id="syncOff" class="muted small hidden">
+            아직 설정되지 않았습니다. <code>config.js</code> 에 Firebase 주소를 넣으면
+            PC와 폰의 제외 목록이 자동으로 맞춰집니다. (README 참고)
+          </p>
+
+          <div id="syncBox" class="hidden">
+            <p class="muted small">
+              다른 기기에서 아래 코드를 입력하면 같은 목록을 씁니다.
+            </p>
+            <div class="row">
+              <span class="row-name">
+                <span>내 동기화 코드</span>
+                <span class="row-sub mono" id="syncKeyText">…</span>
+              </span>
+              <span class="row-btns">
+                <button class="mini" id="syncCopyBtn">복사</button>
+              </span>
+            </div>
+            <input type="text" id="syncJoinInput" class="search" placeholder="다른 기기의 코드를 붙여넣기">
+            <div class="backup-btns">
+              <button id="syncJoinBtn" class="btn">이 코드로 연결</button>
+              <button id="syncNowBtn" class="btn">지금 동기화</button>
+            </div>
+            <p id="syncMsg" class="muted small"></p>
+          </div>
+        </section>
+
+        <section>
           <h3>💾 백업</h3>
           <p class="muted small">브라우저 데이터를 지우면 제외 목록이 날아갑니다. 가끔 내보내서 보관해 두세요.</p>
           <div class="backup-btns">
@@ -105,6 +135,7 @@
     </div>
   </div>
 
+  <script src="config.js"></script>
   <script src="foods.js"></script>
   <script src="app.js"></script>
 

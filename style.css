@@ -451,3 +451,17 @@ body {
 }
 .backup-btns { display: flex; gap: 8px; margin-top: 8px; }
 .backup-btns .btn { flex: 1; }
+
+#syncJoinInput { margin-top: 8px; }
+.mono {
+  font-family: ui-monospace, "Consolas", monospace;
+  font-size: 11px;
+  word-break: break-all;
+}
+code {
+  padding: 1px 5px;
+  border-radius: 5px;
+  background: var(--surface-2);
+  font-family: ui-monospace, "Consolas", monospace;
+  font-size: 12px;
+}

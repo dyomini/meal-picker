@@ -26,7 +26,7 @@ const SCENES = {
     ok: d => d.price <= 2 && !d.smell && d.cat !== "술안주",
   },
   date: {
-    label: "여친이랑 데이트",
+    label: "데이트",
     emoji: "💕",
     hint: "분위기 좋고 냄새 안 나는 곳",
     // 분위기 플래그 필수 + 옷에 냄새 배는 것 제외
@@ -76,6 +76,8 @@ const KEY = {
   sceneExcluded: "mealpicker.sceneExcluded", // 상황별: 이 상황에서만 빼는 음식
   prefs: "mealpicker.prefs",
   recent: "mealpicker.recent",
+  syncKey: "mealpicker.syncKey",       // 기기 간 동기화용 비밀 코드
+  updatedAt: "mealpicker.updatedAt",   // 제외 목록을 마지막으로 고친 시각
 };
 
 function load(key, fallback) {
@@ -117,11 +119,25 @@ if (prefs.meal !== "lunch" && prefs.meal !== "dinner") {
 }
 
 function persistPrefs() { save(KEY.prefs, prefs); }
-function persistExcluded() { save(KEY.excluded, [...excluded]); }
+
+/* 제외 목록을 건드리는 모든 경로가 아래 둘 중 하나를 거치므로,
+   여기서만 동기화 업로드를 걸어두면 빠지는 곳이 없다. */
+function persistExcluded() {
+  save(KEY.excluded, [...excluded]);
+  touch();
+}
 function persistSceneExcluded() {
   const plain = {};
   SCENE_ORDER.forEach(k => { plain[k] = [...sceneExcluded[k]]; });
   save(KEY.sceneExcluded, plain);
+  touch();
+}
+
+/* 로컬을 고친 시각을 남기고 업로드를 예약한다 (동기화 섹션에서 정의) */
+function touch() {
+  updatedAt = Date.now();
+  save(KEY.updatedAt, updatedAt);
+  schedulePush();
 }
 
 /* ------------------------------------------------------------
@@ -208,6 +224,14 @@ const dom = {
   importBtn: $("#importBtn"),
   backupMsg: $("#backupMsg"),
   resetBtn: $("#resetBtn"),
+  syncBox: $("#syncBox"),
+  syncOff: $("#syncOff"),
+  syncKeyText: $("#syncKeyText"),
+  syncCopyBtn: $("#syncCopyBtn"),
+  syncNowBtn: $("#syncNowBtn"),
+  syncJoinInput: $("#syncJoinInput"),
+  syncJoinBtn: $("#syncJoinBtn"),
+  syncMsg: $("#syncMsg"),
 };
 
 let current = null;   // 지금 화면에 떠 있는 음식
@@ -528,7 +552,146 @@ function doImport() {
 }
 
 /* ------------------------------------------------------------
-   7. 이벤트 연결
+   7. 기기 간 동기화 (Firebase Realtime Database REST)
+
+   config.js 의 SYNC_DB_URL 이 비어 있으면 이 절 전체가 꺼지고
+   앱은 기존처럼 기기별 로컬 저장만 쓴다.
+
+   동작 방식
+     - 기기마다 "동기화 코드"(32자 난수)를 하나 갖는다.
+     - 코드가 같은 기기끼리 같은 목록을 본다. 다른 기기에서는
+       그 코드를 입력해서 합류시킨다.
+     - 제외/복구할 때마다 updatedAt 을 찍고 통째로 업로드한다.
+     - 앱을 열거나 다시 볼 때 내려받아, 서버 쪽이 더 최신이면 덮어쓴다.
+   ------------------------------------------------------------ */
+const SYNC_BASE = (typeof SYNC_DB_URL === "string" ? SYNC_DB_URL : "").trim().replace(/\/+$/, "");
+const SYNC_ON = /^https?:\/\/\S+$/.test(SYNC_BASE);
+
+let syncKey = load(KEY.syncKey, "");
+let updatedAt = Number(load(KEY.updatedAt, 0)) || 0;
+let pushTimer = null;
+
+function makeSyncKey() {
+  const b = new Uint8Array(24);
+  crypto.getRandomValues(b);
+  return [...b].map(x => x.toString(36).padStart(2, "0")).join("").slice(0, 32);
+}
+
+function ensureSyncKey() {
+  if (!syncKey) {
+    syncKey = makeSyncKey();
+    save(KEY.syncKey, syncKey);
+  }
+  return syncKey;
+}
+
+function syncEndpoint() {
+  return `${SYNC_BASE}/sync/${ensureSyncKey()}.json`;
+}
+
+const isStrArray = v => Array.isArray(v) && v.every(x => typeof x === "string");
+
+/* 서버에서 받은 문서를 로컬에 반영한다.
+   persist* 를 쓰지 않는 이유: 그러면 다시 업로드가 걸려 왕복이 생긴다. */
+function applyRemote(doc) {
+  if (!doc || typeof doc !== "object" || !isStrArray(doc.all)) return false;
+  excluded = new Set(doc.all);
+  const scenes = doc.scenes && typeof doc.scenes === "object" ? doc.scenes : {};
+  SCENE_ORDER.forEach(k => {
+    sceneExcluded[k] = new Set(isStrArray(scenes[k]) ? scenes[k] : []);
+  });
+  updatedAt = Number(doc.updatedAt) || Date.now();
+  save(KEY.excluded, [...excluded]);
+  const plain = {};
+  SCENE_ORDER.forEach(k => { plain[k] = [...sceneExcluded[k]]; });
+  save(KEY.sceneExcluded, plain);
+  save(KEY.updatedAt, updatedAt);
+  return true;
+}
+
+function hasLocalData() {
+  return excluded.size > 0 || SCENE_ORDER.some(k => sceneExcluded[k].size > 0);
+}
+
+async function syncPull() {
+  if (!SYNC_ON) return "off";
+  const res = await fetch(syncEndpoint(), { cache: "no-store" });
+  if (!res.ok) throw new Error("서버 응답 " + res.status);
+  const doc = await res.json();
+  if (doc === null) {
+    // 서버가 비어 있다. 로컬에 뭔가 있으면 그걸 올려서 기준을 만든다.
+    if (hasLocalData()) { await syncPush(); return "pushed"; }
+    return "empty";
+  }
+  if ((Number(doc.updatedAt) || 0) > updatedAt) {
+    applyRemote(doc);
+    refreshSettings();
+    updatePoolInfo();
+    return "pulled";
+  }
+  return "local-newer";
+}
+
+async function syncPush() {
+  if (!SYNC_ON) return "off";
+  const body = Object.assign(currentBackup(), { updatedAt: updatedAt || Date.now() });
+  const res = await fetch(syncEndpoint(), {
+    method: "PUT",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error("서버 응답 " + res.status);
+  return "pushed";
+}
+
+function schedulePush() {
+  if (!SYNC_ON) return;
+  clearTimeout(pushTimer);
+  // 연속으로 여러 개 제외할 때 매번 올리지 않도록 잠깐 모은다
+  pushTimer = setTimeout(() => {
+    setSyncMsg("올리는 중…");
+    syncPush()
+      .then(() => setSyncMsg("동기화됨 · " + nowText()))
+      .catch(e => setSyncMsg("업로드 실패: " + e.message + " (로컬에는 저장됨)"));
+  }, 800);
+}
+
+function nowText() {
+  const d = new Date();
+  return `${String(d.getHours()).padStart(2, "0")}:${String(d.getMinutes()).padStart(2, "0")}`;
+}
+
+function setSyncMsg(text) {
+  if (dom.syncMsg) dom.syncMsg.textContent = text;
+}
+
+function renderSync() {
+  if (!dom.syncBox) return;
+  if (!SYNC_ON) {
+    dom.syncBox.classList.add("hidden");
+    dom.syncOff.classList.remove("hidden");
+    return;
+  }
+  dom.syncBox.classList.remove("hidden");
+  dom.syncOff.classList.add("hidden");
+  dom.syncKeyText.textContent = ensureSyncKey();
+}
+
+function runPull(manual) {
+  if (!SYNC_ON) return;
+  setSyncMsg("확인 중…");
+  syncPull()
+    .then(r => {
+      if (r === "pulled") setSyncMsg("다른 기기 내용을 받아왔습니다 · " + nowText());
+      else if (r === "pushed") setSyncMsg("이 기기 내용을 올렸습니다 · " + nowText());
+      else if (r === "empty") setSyncMsg("아직 올린 내용이 없습니다.");
+      else setSyncMsg(manual ? "이미 최신입니다 · " + nowText() : "");
+    })
+    .catch(e => setSyncMsg("연결 실패: " + e.message));
+}
+
+/* ------------------------------------------------------------
+   8. 이벤트 연결
    ------------------------------------------------------------ */
 dom.rollBtn.onclick = roll;
 dom.again.onclick = roll;
@@ -560,7 +723,39 @@ dom.spicy.oninput = () => {
 
 dom.settingsBtn.onclick = () => {
   refreshSettings();
+  renderSync();
   dom.settings.classList.remove("hidden");
+};
+
+dom.syncCopyBtn.onclick = () => {
+  const key = ensureSyncKey();
+  navigator.clipboard.writeText(key)
+    .then(() => setSyncMsg("코드를 복사했습니다. 다른 기기에 붙여넣으세요."))
+    .catch(() => {
+      // 클립보드 권한이 없으면 직접 고를 수 있게 선택만 해준다
+      const r = document.createRange();
+      r.selectNodeContents(dom.syncKeyText);
+      const s = getSelection();
+      s.removeAllRanges();
+      s.addRange(r);
+      setSyncMsg("자동 복사가 막혀 있습니다. 선택된 코드를 직접 복사하세요.");
+    });
+};
+
+dom.syncNowBtn.onclick = () => runPull(true);
+
+dom.syncJoinBtn.onclick = () => {
+  const k = dom.syncJoinInput.value.trim();
+  if (!k) { setSyncMsg("연결할 코드를 입력해 주세요."); return; }
+  if (!/^[0-9a-z]{16,64}$/.test(k)) { setSyncMsg("코드 형식이 올바르지 않습니다."); return; }
+  syncKey = k;
+  save(KEY.syncKey, syncKey);
+  // 합류하는 쪽은 서버 내용을 받아야 하므로 로컬 시각을 0으로 낮춘다
+  updatedAt = 0;
+  save(KEY.updatedAt, 0);
+  dom.syncJoinInput.value = "";
+  renderSync();
+  runPull(true);
 };
 dom.closeSettings.onclick = () => dom.settings.classList.add("hidden");
 dom.settings.onclick = e => { if (e.target === dom.settings) dom.settings.classList.add("hidden"); };
@@ -604,7 +799,7 @@ document.addEventListener("keydown", e => {
 });
 
 /* ------------------------------------------------------------
-   8. 초기화
+   9. 초기화
    ------------------------------------------------------------ */
 dom.spicy.value = prefs.maxSpicy;
 dom.spicyLabel.textContent = SPICY_LABELS[prefs.maxSpicy];
@@ -616,6 +811,16 @@ renderTabs();
 renderMealToggle();
 resetStage();
 updatePoolInfo();
+renderSync();
 
-console.log(`[점메추] 음식 ${FOODS.length}개 로드됨`);
+if (SYNC_ON) {
+  runPull(false);
+  // 폰에서 앱을 다시 열었을 때 다른 기기의 변경을 반영한다
+  document.addEventListener("visibilitychange", () => {
+    if (!document.hidden) runPull(false);
+  });
+  window.addEventListener("online", () => runPull(false));
+}
+
+console.log(`[점메추] 음식 ${FOODS.length}개 로드됨, 동기화 ${SYNC_ON ? "켜짐" : "꺼짐"}`);
 SCENE_ORDER.forEach(k => console.log(`  ${SCENES[k].label}: 후보 ${candidates(k).length}개`));

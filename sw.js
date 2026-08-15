@@ -2,11 +2,12 @@
    전략: 네트워크 우선, 실패하면 캐시.
    (캐시 우선으로 하면 foods.js 를 수정해서 올려도 폰에 계속 옛날 버전이 뜬다) */
 
-const CACHE = "mealpicker-v1";
+const CACHE = "mealpicker-v2";
 const ASSETS = [
   "./",
   "./index.html",
   "./style.css",
+  "./config.js",
   "./foods.js",
   "./app.js",
   "./icon.svg",
@@ -35,6 +36,9 @@ self.addEventListener("activate", e => {
 
 self.addEventListener("fetch", e => {
   if (e.request.method !== "GET") return;
+  // 동기화 서버(Firebase) 같은 외부 요청은 건드리지 않는다.
+  // 캐시했다간 옛날 목록이 내려오고, 실패 시 index.html 이 돌아가 버린다.
+  if (new URL(e.request.url).origin !== self.location.origin) return;
   e.respondWith(
     fetch(e.request)
       .then(res => {
